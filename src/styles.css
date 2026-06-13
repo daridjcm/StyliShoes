@@ -9,7 +9,7 @@ body {
 
 section {
   width: 100%;
-  margin-bottom: 6rem;
+  margin-bottom: 2rem;
   padding: 2rem;
 }
 
@@ -47,7 +47,6 @@ ul {
 /* Main */
 #hero {
   display: flex;
-  width: 100%;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -55,7 +54,14 @@ ul {
   color: #0c0c0c;
 }
 
+#hero div#container-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 #hero div#btn {
+  width: 100%;
   display: flex;
   justify-content: center;
   gap: 1rem;
@@ -117,7 +123,7 @@ footer {
   padding: 2rem;
   justify-content: space-around;
   align-items: center;
-  background-color: #720707;
+  background-color: #169b85;
   color: #fff;
 }
 
