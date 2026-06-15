@@ -20,7 +20,6 @@ const server = Bun.serve({
       }
       return new Response('index.html no encontrado en ' + indexPath, { status: 404 });
     }
-
     
     if (path.startsWith('/src/')) {
       const relativePath = path.slice(5);
@@ -34,3 +33,5 @@ const server = Bun.serve({
     return new Response('404 Not Found', { status: 404 });
   },
 });   
+
+console.log('Servidor corriendo en http://localhost:3000');
