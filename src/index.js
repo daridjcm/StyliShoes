@@ -1,12 +1,12 @@
 const btnProducts = document.getElementById("btn-products");
-const btnContact = document.getElementById("btn-contact");
+const btnContact = document.getElementById("btn-about");
 
 btnProducts?.addEventListener("click", () => {
   window.location.href = "./src/pages/products.html";
 });
 
 btnContact?.addEventListener("click", () => {
-  window.location.href = "./src/pages/contact.html";
+  window.location.href = "./src/pages/aboutUS.html";
 });
 
 // Fetch Products
@@ -55,7 +55,6 @@ function renderProducts(data) {
     </button>
     </div>
     `;
-    
     productList.appendChild(productItem);
   });
 }
