@@ -2,12 +2,12 @@ let products = [];
 const cartItems = (JSON.parse(localStorage.getItem("cartItems")) || []).map(String);
 
 const DOM = {
-  list:        document.getElementById("cart-items"),
-  count:       document.getElementById("cart-count"),
-  price:       document.getElementById("cart-total-price"),
-  modal:       document.getElementById("cart-modal"),
-  btnCart:     document.getElementById("cart-btn"),
-  btnClose:    document.getElementById("cart-close-btn"),
+  list: document.getElementById("cart-items"),
+  count: document.getElementById("cart-count"),
+  price: document.getElementById("cart-total-price"),
+  modal: document.getElementById("cart-modal"),
+  btnCart: document.getElementById("cart-btn"),
+  btnClose: document.getElementById("cart-close-btn"),
   productGrid: document.getElementById("product-list") 
 };
 

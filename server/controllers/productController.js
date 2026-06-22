@@ -162,7 +162,12 @@ export async function createPurchase(req) {
 
 export async function getPurchases(url) {
   try {
-    // 1. Agregamos p.id_customer a la consulta SQL para que el frontend lo pueda pintar
+    const id_customer = url.searchParams.get("id_customer");
+
+    if (!id_customer) {
+      return jsonResponse({ error: "Missing id_customer parameter" }, 400);
+    }
+
     const [rows] = await pool.execute(`
       SELECT 
         p.id_purchase, 
@@ -175,8 +180,9 @@ export async function getPurchases(url) {
         pi.price AS item_price
       FROM purchases p
       LEFT JOIN purchase_items pi ON p.id_purchase = pi.id_purchase
+      WHERE p.id_customer = ?
       ORDER BY p.date DESC
-    `);
+    `, [id_customer]);
 
     const purchasesMap = rows.reduce((acc, row) => {
       if (!row.id_purchase) return acc;
@@ -184,16 +190,15 @@ export async function getPurchases(url) {
       if (!acc[row.id_purchase]) {
         acc[row.id_purchase] = {
           id_purchase: row.id_purchase,
-          id_customer: row.id_customer, // Aseguramos que viaje el ID del cliente
+          id_customer: row.id_customer,
           customer: row.customer,
           total: row.total,
           date: row.date,
           status: row.status,
-          items: [] // Aquí se guardarán los productos
+          items: []
         };
       }
 
-      // CORREGIDO: Forzamos el mapeo a la propiedad 'name' de forma clara
       if (row.product_name) {
         acc[row.id_purchase].items.push({
           name: row.product_name,

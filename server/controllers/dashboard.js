@@ -4,10 +4,15 @@ const div = document.getElementById('dashboard');
 
 async function tablePurchases(username) {
   try {
-    const response = await fetch('/api/purchases');
+    const idCustomer = sessionStorage.getItem('id_customer');
+    
+    if (!idCustomer) {
+      return div.innerHTML = `<h1>Welcome ${username} (Customer)</h1><p class="form-hint">Session not found. Please log in again.</p>`;
+    }
+
+    const response = await fetch(`/api/purchases?id_customer=${idCustomer}`);
     const data = await response.json();
     const purchases = data.purchases || data.orders || data || [];
-    console.log("Compras recibidas del servidor:", purchases);
 
     if (!response.ok) {
       return div.innerHTML = `<h1>Welcome ${username} (Customer)</h1><p class="form-hint">Error loading purchases.</p>`;
@@ -15,7 +20,6 @@ async function tablePurchases(username) {
 
     const tbodyContent = purchases.length 
       ? purchases.map(p => {
-          // Generamos una lista ordenada/desordenada limpia para los productos y sus precios
           let itemsHTML = '<span class="text-muted">No products listed</span>';
           
           if (Array.isArray(p.items) && p.items.length > 0) {
@@ -40,7 +44,7 @@ async function tablePurchases(username) {
               <td>${itemsHTML}</td>
               <td>${p.date ? new Date(p.date).toLocaleDateString() : 'N/A'}</td>
               <td><strong>$${Number(p.total).toFixed(2)}</strong></td>
-              <td><span class="status-${String(p.status).toLowerCase()}">${p.status}</span></td>
+              <td><span class="status-${String(p.status).toLowerCase()}">${p.status === 'Approved' ? '<i class="fas fa-check"></i>' : '<i class="fas fa-clock"></i>'}</span></td>
             </tr>`;
         }).join('')
       : `<tr><td colspan="7" class="cart-empty">No purchases recorded yet.</td></tr>`;
