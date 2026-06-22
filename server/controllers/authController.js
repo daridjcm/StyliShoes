@@ -1,142 +1,100 @@
-import mysql from "mysql2/promise";
-import { join } from 'path';
+import pool from "../db.js";
+import jwt from 'jsonwebtoken';
 
-const pool = mysql.createPool({
-  host: 'localhost',
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME || 'stylishoes',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
-});
+const jsonResponse = (data, status = 200) => 
+  new Response(JSON.stringify(data), { status, headers: { "Content-Type": "application/json" } });
 
-const jsonHeaders = { "Content-Type": "application/json" };
-
-async function syncProductsJson() {
+export async function registerUser(req) {
   try {
-    const [rows] = await pool.execute('SELECT * FROM products');
-    const formattedProducts = rows.map(row => ({
-      id: row.id,
-      category: row.category,
-      name: row.name,
-      description: row.description,
-      price: row.price,
-      size: row.size ? row.size.split(',').map(Number) : [],
-      image: row.image_url ? row.image_url.split('/').pop() : ''
-    }));
-
-    const filePath = join(import.meta.dir, '../../products.json');
-    await Bun.write(filePath, JSON.stringify({ products: formattedProducts }, null, 2));
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-export async function getProductById(url) {
-  try {
-    const id = url.searchParams.get("id");
-
-    if (id) {
-      const [rows] = await pool.execute('SELECT * FROM products WHERE id = ?', [id]);
-      if (rows.length === 0) {
-        return new Response(JSON.stringify({ error: "Product not found" }), { status: 404, headers: jsonHeaders });
-      }
-      return new Response(JSON.stringify({ product: rows[0] }), { status: 200, headers: jsonHeaders });
-    } else {
-      const [rows] = await pool.execute('SELECT * FROM products');
-      return new Response(JSON.stringify({ products: rows }), { status: 200, headers: jsonHeaders });
-    }
-  } catch (error) {
-    console.error(error);
-    return new Response(JSON.stringify({ error: "Internal server error" }), { status: 500, headers: jsonHeaders });
-  }
-}
-
-export async function createProduct(req) {
-  try {
-    const formData = await req.formData();
-    const name = formData.get("name");
-    const category = formData.get("category");
-    const description = formData.get("description");
-    const size = formData.get("size");
-    const price = formData.get("price");
-    const imageFile = formData.get("image");
-    let imagePath = null;
-
-    if (imageFile && imageFile.size > 0) {
-      const extension = imageFile.name.split('.').pop();
-      const fileName = `product_${Date.now()}.${extension}`;
-      imagePath = `/src/images/${fileName}`;
-      await Bun.write(join(import.meta.dir, '../../', imagePath), imageFile);
+    const rawText = await req.text();
+    if (!rawText.trim()) {
+      return jsonResponse({ error: "The request body is empty." }, 400);
     }
 
+    let body;
+    try {
+      body = JSON.parse(rawText);
+    } catch (e) {
+      return jsonResponse({ error: "The client did not send a valid JSON format" }, 400);
+    }
+
+    const hashedPassword = await Bun.password.hash(body.password);
     await pool.execute(
-      'INSERT INTO products (name, category, description, size, price, image_url) VALUES (?, ?, ?, ?, ?, ?)',
-      [name, category, description, size, price, imagePath]
+      'INSERT INTO users (name, lastname, username, email, password) VALUES (?, ?, ?, ?, ?)',
+      [body.name, body.lastname, body.username, body.email, hashedPassword]
     );
 
-    await syncProductsJson();
-
-    return new Response(JSON.stringify({ message: "Product saved successfully!" }), { status: 201, headers: jsonHeaders });
+    return jsonResponse({ message: "User registered successfully" }, 201);
   } catch (error) {
-    console.error(error);
-    return new Response(JSON.stringify({ error: "Internal server error" }), { status: 500, headers: jsonHeaders });
+    console.error("Error in register:", error);
+    return jsonResponse({ error: "Internal Server Error" }, 500);
   }
 }
 
-export async function updateProduct(req) {
+export async function saveUser(req) {
   try {
-    const formData = await req.formData();
-    const id = formData.get("id");
-    const name = formData.get("name");
-    const category = formData.get("category");
-    const description = formData.get("description");
-    const size = formData.get("size");
-    const price = formData.get("price");
-    const imageFile = formData.get("image");
-
-    if (!id) return new Response(JSON.stringify({ error: "Missing product ID" }), { status: 400, headers: jsonHeaders });
-
-    const [current] = await pool.execute('SELECT image_url FROM products WHERE id = ?', [id]);
-    if (current.length === 0) return new Response(JSON.stringify({ error: "Product not found" }), { status: 404, headers: jsonHeaders });
+    const body = await req.json();
+    const hashedPassword = await Bun.password.hash(body.password);
     
-    let imagePath = current[0].image_url;
-
-    if (imageFile && imageFile.size > 0) {
-      const extension = imageFile.name.split('.').pop();
-      const fileName = `product_${Date.now()}.${extension}`;
-      imagePath = `/src/images/${fileName}`;
-      await Bun.write(join(import.meta.dir, '../../', imagePath), imageFile);
-    }
-
     await pool.execute(
-      'UPDATE products SET name = ?, category = ?, description = ?, size = ?, price = ?, image_url = ? WHERE id = ?',
-      [name, category, description, size, price, imagePath, id]
+      'INSERT INTO users (name, lastname, email, password) VALUES (?, ?, ?, ?)',
+      [body.name, body.lastname, body.email, hashedPassword]
     );
 
-    await syncProductsJson();
-
-    return new Response(JSON.stringify({ message: "Product modified successfully!" }), { status: 200, headers: jsonHeaders });
+    return jsonResponse({ message: "User saved successfully" }, 201);
   } catch (error) {
-    console.error(error);
-    return new Response(JSON.stringify({ error: "Internal server error" }), { status: 500, headers: jsonHeaders });
+    console.error("Error in POST /api/users:", error);
+    return jsonResponse({ error: "Error to save in the database" }, 500);
   }
 }
 
-export async function deleteProduct(req) {
+export async function getUsers() {
   try {
-    const formData = await req.formData();
-    const id = formData.get("id");
-
-    if (!id) return new Response(JSON.stringify({ error: "Missing product ID" }), { status: 400, headers: jsonHeaders });
-
-    await pool.execute('DELETE FROM products WHERE id = ?', [id]);
-    await syncProductsJson();
-
-    return new Response(JSON.stringify({ message: "Product deleted successfully!" }), { status: 200, headers: jsonHeaders });
+    const [rows] = await pool.execute('SELECT * FROM users');
+    return jsonResponse(rows);
   } catch (error) {
-    console.error(error);
-    return new Response(JSON.stringify({ error: "Internal server error" }), { status: 500, headers: jsonHeaders });
+    console.error("Error in GET /api/users:", error);
+    return jsonResponse({ error: "Error to consult the database" }, 500);
+  }
+}
+
+export async function loginUser(req) {
+  try {
+    let body;
+    try {
+      body = await req.json();
+    } catch (parseError) {
+      console.warn("Warning: Attempt to login with invalid or empty JSON.");
+      return jsonResponse({ error: "The request body must be a valid JSON." }, 400);
+    }
+
+    if (!body || !body.email || !body.password) {
+      return jsonResponse({ error: "The email and password are required." }, 400);
+    }
+
+    const [rows] = await pool.execute('SELECT * FROM users WHERE email = ?', [body.email]);
+
+    if (rows.length === 0) {
+      return jsonResponse({ error: "Invalid credentials" }, 401);
+    }
+
+    const user = rows[0];
+    const isPasswordCorrect = await Bun.password.verify(body.password, user.password);
+
+    if (!isPasswordCorrect) {
+      return jsonResponse({ error: "Invalid credentials" }, 401);
+    }
+
+    const token = jwt.sign(
+      { id: user.id, username: user.username, email: user.email, type: user.admin }, 
+      process.env.JWT_SECRET, 
+      { expiresIn: '1h' }
+    );
+
+    return jsonResponse({ message: "User authenticated", token });
+
+  } catch (error) {
+    console.error("Error critical in POST /api/login:", error);
+    return jsonResponse({ error: "Internal server error" }, 500);
   }
 }

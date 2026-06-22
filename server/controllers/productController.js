@@ -53,19 +53,24 @@ export async function createProduct(req) {
     const size = formData.get("size");
     const price = formData.get("price");
     const imageFile = formData.get("image");
+
+    const [result] = await pool.execute(
+      'INSERT INTO products (name, category, description, size, price, image_url) VALUES (?, ?, ?, ?, ?, ?)',
+      [name, category, description, size, price, null]
+    );
+
+    const productId = result.insertId;
     let imagePath = null;
 
     if (imageFile && imageFile.size > 0) {
       const extension = imageFile.name.split('.').pop();
-      const fileName = `product_${Date.now()}.${extension}`;
+      const fileName = `product_${productId}.${extension}`;
       imagePath = `/src/images/${fileName}`;
+      
       await Bun.write(join(import.meta.dir, '../../', imagePath), imageFile);
-    }
 
-    await pool.execute(
-      'INSERT INTO products (name, category, description, size, price, image_url) VALUES (?, ?, ?, ?, ?, ?)',
-      [name, category, description, size, price, imagePath]
-    );
+      await pool.execute('UPDATE products SET image_url = ? WHERE id = ?', [imagePath, productId]);
+    }
 
     await syncProductsJson();
 
@@ -100,7 +105,7 @@ export async function updateProduct(req) {
 
     if (imageFile && imageFile.size > 0) {
       const extension = imageFile.name.split('.').pop();
-      const fileName = `product_${Date.now()}.${extension}`;
+      const fileName = `product_${id}.${extension}`;
       imagePath = `/src/images/${fileName}`;
       await Bun.write(join(import.meta.dir, '../../', imagePath), imageFile);
     }

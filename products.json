@@ -6,7 +6,12 @@
       "name": "Red High Heel Shoe",
       "description": "Elegant and comfortable",
       "price": 1200,
-      "size": [35, 36, 37, 38],
+      "size": [
+        35,
+        36,
+        37,
+        38
+      ],
       "image": "red-heels.jpeg"
     },
     {
@@ -14,8 +19,13 @@
       "category": "women",
       "name": "Dark Red High Heel Shoe",
       "description": "Elegant and stunning",
-      "price": 2200,
-      "size": [36, 37, 38, 39],
+      "price": 2500,
+      "size": [
+        36,
+        37,
+        38,
+        39
+      ],
       "image": "cherry-heels.jpeg"
     },
     {
@@ -24,7 +34,12 @@
       "name": "Platform Style Sandals",
       "description": "A trendy 2000's look",
       "price": 700,
-      "size": [35, 36, 37, 38],
+      "size": [
+        35,
+        36,
+        37,
+        38
+      ],
       "image": "heart-heleed.jpeg"
     },
     {
@@ -33,7 +48,12 @@
       "name": "Black Casual Shoe",
       "description": "Perfect for formal events",
       "price": 1500,
-      "size": [40, 41, 42, 43],
+      "size": [
+        40,
+        41,
+        42,
+        43
+      ],
       "image": "black-shoes.jpeg"
     },
     {
@@ -42,17 +62,44 @@
       "name": "Vans Shoe",
       "description": "Perfect for casual outings",
       "price": 500,
-      "size": [40, 41, 42, 43],
+      "size": [
+        40,
+        41,
+        42,
+        43
+      ],
       "image": "vans-shoes.jpeg"
     },
     {
-      "id": 7,
+      "id": 10,
       "category": "men",
-      "name": "Air Force One Shoe",
-      "description": "Perfect for casual outings",
-      "price": 850,
-      "size": [40, 41, 42, 43],
-      "image": "af1-force.jpeg"
+      "name": "Air Force One Black Addition",
+      "description": "Casual and fitness",
+      "price": 5200,
+      "size": [
+        40,
+        41,
+        42,
+        45
+      ],
+      "image": "product_1782109171717.jpeg"
+    },
+    {
+      "id": 11,
+      "category": "women",
+      "name": "Custom Chuck Taylor All Star Lugged Heel Platform By You",
+      "description": "To feel the rock vibe with this heel",
+      "price": 120,
+      "size": [
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40
+      ],
+      "image": "product_11.jpeg"
     }
   ]
 }

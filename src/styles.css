@@ -793,6 +793,80 @@ table tr:hover {
   background-color: var(--color-bg-card);
 }
 
+/* ===== CRUD Layout ===== */
+
+#dashboard {
+  padding: 2rem;
+}
+.crud-layout {
+  display: flex !important;
+  flex-direction: row;
+  gap: 30px;
+  margin-top: 20px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.crud-form-side {
+  flex: 1;
+  min-width: 300px;
+  max-width: 450px;
+}
+
+.crud-form-side .form {
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.crud-table-side {
+  flex: 1.5;
+  min-width: 400px;
+}
+
+.products-table-scroll {
+  max-height: 520px;
+  overflow-y: auto;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius);
+  background-color: var(--color-white);
+}
+
+.crud-table-side table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 0;
+}
+
+.crud-table-side th, 
+.crud-table-side td {
+  padding: 12px 10px;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 0.95rem;
+}
+
+.crud-table-side tr:hover {
+  background-color: var(--color-bg-light);
+}
+
+.crud-table-side th {
+  background-color: var(--color-bg-card);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  font-weight: 600;
+}
+
+.btn-select-prod {
+  margin-top: 0 !important;
+  padding: 0.4rem 0.8rem !important;
+  font-size: 0.9rem !important;
+}
+
+.btn-select-prod:hover {
+  transform: none !important;
+}
 
 /* ===== Responsive Design ===== */
 @media screen and (max-width: 900px) {

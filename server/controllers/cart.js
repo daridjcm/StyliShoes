@@ -10,7 +10,7 @@ const btnCart = document.getElementById("cart-btn");
 const btnCheckout = document.getElementById("checkout-btn");
 const btnInvoice = document.getElementById("invoice-btn");
 
-// ===== Modal Functions =====
+// Modal Functions
 function openCart() {
   const cartModal = document.getElementById("cart-modal");
   if (cartModal) {
@@ -43,12 +43,12 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
-// ===== Event Listeners =====
+// Event Listeners
 btnCart?.addEventListener("click", openCart);
 btnCheckout?.addEventListener("click", clearCart);
 btnInvoice?.addEventListener("click", downloadInvoice);
 
-// ===== Cart Functions =====
+// Cart Functions
 function updateCartCount() {
   if (cartCount) {
     cartCount.textContent = cartItems.length;
@@ -148,7 +148,6 @@ function renderCartItems() {
   updateTotalPrice();
 }
 
-// ===== Initialize =====
 updateCartCount();
 updateTotalPrice();
 renderCartItems();

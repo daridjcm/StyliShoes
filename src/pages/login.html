@@ -22,7 +22,7 @@
   <main>
 
     <section>
-      <form class="form" id="form-login">
+      <form class="form" method="post" action="/api/login" id="form-login">
         <div class="form-group">
           <label for="inputUsername">Username</label>
           <input type="text" id="inputUsername" name="username" autocomplete="username" required />
@@ -51,6 +51,7 @@
   <footer>
     <p>&copy; StyliShoes - 2024</p>
   </footer>
+  <script type="module" src="../../server/controllers/forms.js"></script>
 </body>
 
 </html>
