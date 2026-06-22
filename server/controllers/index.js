@@ -9,10 +9,9 @@ btnContact?.addEventListener("click", () => {
   window.location.href = "./src/pages/aboutUS.html";
 });
 
-// Fetch Products
 async function fetchProducts() {
   try {
-    const response = await fetch("./products.json");
+    const response = await fetch("/api/products");
 
     if (!response.ok) {
       throw new Error(`HTTP Error: ${response.status}`);
@@ -25,9 +24,6 @@ async function fetchProducts() {
   }
 }
 
-
-
-// Render Products
 function renderProducts(data) {
   const productList = document.getElementById("product-list");
   
@@ -35,25 +31,31 @@ function renderProducts(data) {
 
   productList.innerHTML = "";
 
-  products = Array.isArray(data) ? data : data.products || [];
+  const productsListToRender = Array.isArray(data) ? data : (data.products || []);
 
-  products.forEach((product) => {
+  productsListToRender.forEach((product) => {
     const productItem = document.createElement("div");
     productItem.classList.add("product-card");
     
+    const sizesArray = typeof product.size === 'string' 
+      ? product.size.split(',') 
+      : (Array.isArray(product.size) ? product.size : []);
+
+    const imageSource = product.image_url ? product.image_url : `/src/images/${product.image}`;
+    
     productItem.innerHTML = `
-    <img src="./images/${product.image}" alt="${product.name}">
-    
-    <div class="product-card-info">
-    <p>${product.name}</p>
-    <p>${product.description}</p>
-    <p><strong>Price:</strong> $${product.price}</p>
-    <p><strong>Sizes:</strong> ${product.size.join(", ")}</p>
-    
-    <button onclick="addToCart('${product.id}')">
-    Add to Cart
-    </button>
-    </div>
+      <img src="${imageSource}" alt="${product.name}">
+      
+      <div class="product-card-info">
+        <p>${product.name}</p>
+        <p>${product.description}</p>
+        <p><strong>Price:</strong> $${product.price}</p>
+        <p><strong>Sizes:</strong> ${sizesArray.join(", ")}</p>
+        
+        <button onclick="addToCart('${product.id}')">
+          Add to Cart
+        </button>
+      </div>
     `;
     productList.appendChild(productItem);
   });
@@ -61,7 +63,6 @@ function renderProducts(data) {
 
 if (window.location.pathname.includes("products.html")) {
   fetchProducts().then(data => {
-    console.log(data);
     renderProducts(data);
   });
 }

@@ -22,10 +22,10 @@
   <main>
 
     <section>
-      <form class="contact-form" novalidate>
+      <form class="form" id="form-contact">
         <div class="form-group">
           <label for="inputFullname">Full Name</label>
-          <input type="text" id="inputFullname" name="fullname" autocomplete="name" />
+          <input type="text" id="inputFullname" name="fullname" autocomplete="name" required />
         </div>
 
         <div class="form-group">
@@ -164,17 +164,17 @@
 
         <div class="form-group">
           <label for="inputEmail">Email address</label>
-          <input type="email" id="inputEmail" name="email" autocomplete="email" />
+          <input type="email" id="inputEmail" name="email" autocomplete="email" required />
           <small class="form-hint">We'll never share your email with anyone else.</small>
         </div>
 
         <div class="form-group">
           <label for="inputMessage">Message</label>
-          <textarea id="inputMessage" name="message" rows="4"></textarea>
+          <textarea id="inputMessage" name="message" rows="4" required></textarea>
         </div>
 
         <div class="form-group form-check-group">
-          <input type="checkbox" id="check" name="terms" />
+          <input type="checkbox" id="check" name="terms" required />
           <label for="check">Accept
             <a href="./terms_conditions.html">terms and conditions</a></label>
         </div>
@@ -185,7 +185,9 @@
   </main>
   <footer>
     <p>&copy; StyliShoes - 2024</p>
+    <a href="./terms_conditions.html">Terms and Conditions</a>
   </footer>
+  <script src="../forms.js"></script>
 </body>
 
 </html>
