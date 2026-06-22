@@ -4,26 +4,26 @@ import jwt from 'jsonwebtoken';
 const jsonResponse = (data, status = 200) => 
   new Response(JSON.stringify(data), { status, headers: { "Content-Type": "application/json" } });
 
-export async function registerUser(req) {
+// Helper para parsear JSON de forma segura y evitar repetir try/catch
+async function parseBody(req) {
   try {
-    const rawText = await req.text();
-    if (!rawText.trim()) {
-      return jsonResponse({ error: "The request body is empty." }, 400);
-    }
+    const text = await req.text();
+    return text.trim() ? JSON.parse(text) : null;
+  } catch {
+    return null;
+  }
+}
 
-    let body;
-    try {
-      body = JSON.parse(rawText);
-    } catch (e) {
-      return jsonResponse({ error: "The client did not send a valid JSON format" }, 400);
-    }
+export async function registerUser(req) {
+  const body = await parseBody(req);
+  if (!body) return jsonResponse({ error: "The request body must be a valid, non-empty JSON." }, 400);
 
+  try {
     const hashedPassword = await Bun.password.hash(body.password);
     await pool.execute(
       'INSERT INTO users (name, lastname, username, email, password) VALUES (?, ?, ?, ?, ?)',
       [body.name, body.lastname, body.username, body.email, hashedPassword]
     );
-
     return jsonResponse({ message: "User registered successfully" }, 201);
   } catch (error) {
     console.error("Error in register:", error);
@@ -40,10 +40,9 @@ export async function saveUser(req) {
       'INSERT INTO users (name, lastname, email, password) VALUES (?, ?, ?, ?)',
       [body.name, body.lastname, body.email, hashedPassword]
     );
-
     return jsonResponse({ message: "User saved successfully" }, 201);
   } catch (error) {
-    console.error("Error in POST /api/users:", error);
+    console.error("Error to save in the database:", error);
     return jsonResponse({ error: "Error to save in the database" }, 500);
   }
 }
@@ -59,32 +58,18 @@ export async function getUsers() {
 }
 
 export async function loginUser(req) {
+  const body = await parseBody(req);
+  if (!body || !body.email || !body.password) {
+    return jsonResponse({ error: "The email and password are required in a valid JSON format." }, 400);
+  }
+
   try {
-    let body;
-    try {
-      body = await req.json();
-    } catch (parseError) {
-      console.warn("Warning: Attempt to login with invalid or empty JSON.");
-      return jsonResponse({ error: "The request body must be a valid JSON." }, 400);
-    }
-
-    if (!body || !body.email || !body.password) {
-      return jsonResponse({ error: "The email and password are required." }, 400);
-    }
-
     const [rows] = await pool.execute('SELECT * FROM users WHERE email = ?', [body.email]);
-
-    if (rows.length === 0) {
+    if (!rows.length || !(await Bun.password.verify(body.password, rows[0].password))) {
       return jsonResponse({ error: "Invalid credentials" }, 401);
     }
 
     const user = rows[0];
-    const isPasswordCorrect = await Bun.password.verify(body.password, user.password);
-
-    if (!isPasswordCorrect) {
-      return jsonResponse({ error: "Invalid credentials" }, 401);
-    }
-
     const token = jwt.sign(
       { id: user.id, username: user.username, email: user.email, type: user.admin }, 
       process.env.JWT_SECRET, 
@@ -92,7 +77,6 @@ export async function loginUser(req) {
     );
 
     return jsonResponse({ message: "User authenticated", token });
-
   } catch (error) {
     console.error("Error critical in POST /api/login:", error);
     return jsonResponse({ error: "Internal server error" }, 500);

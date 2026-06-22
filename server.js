@@ -20,7 +20,9 @@ Bun.serve({
     if (method === "GET"    && path === "/api/products") return products.getProductById(url);
     if (method === "PUT"    && path === "/api/products") return products.updateProduct(req);
     if (method === "DELETE" && path === "/api/products") return products.deleteProduct(req);
-
+    if (method === "POST"   && path === "/api/purchases") return products.createPurchase(req);
+    if (method === "GET"    && path === "/api/purchases") return products.getPurchases(url);
+    
     // FRONTEND ROUTES
     if (path === '/' || path === '/index.html') {
       const filePath = join(import.meta.dir, 'index.html');
