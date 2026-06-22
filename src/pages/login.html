@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - StyliShoes</title>
+  <link rel="stylesheet" href="../styles.css" />
+</head>
+
+<body>
+  <header class="header-container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/index.html">Home</a></li>
+        <li class="breadcrumb-item active" aria-current="page">
+          Login
+        </li>
+      </ol>
+    </nav>
+  </header>
+  <main>
+
+    <section>
+      <form class="form" id="form-login">
+        <div class="form-group">
+          <label for="inputUsername">Username</label>
+          <input type="text" id="inputUsername" name="username" autocomplete="username" required />
+        </div>
+        
+        <div class="form-group">
+          <label for="inputEmail">Email address</label>
+          <input type="email" id="inputEmail" name="email" autocomplete="email" required />
+        </div>
+
+        <div class="form-group">
+          <label for="inputPassword">Password</label>
+          <input type="password" id="inputPassword" name="password" autocomplete="current-password" required />
+        </div>
+
+        <div class="form-group form-check-group">
+          <input type="checkbox" id="check" name="terms" required />
+          <label for="check">Accept
+            <a href="./terms_conditions.html">terms and conditions</a></label>
+        </div>
+
+        <button type="submit" id="btn-login">Login</button>
+      </form>
+    </section>
+  </main>
+  <footer>
+    <p>&copy; StyliShoes - 2024</p>
+  </footer>
+</body>
+
+</html>
