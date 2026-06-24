@@ -22,6 +22,8 @@ Bun.serve({
     if (method === "DELETE" && path === "/api/products") return products.deleteProduct(req);
     if (method === "POST"   && path === "/api/purchases") return products.createPurchase(req);
     if (method === "GET"    && path === "/api/purchases") return products.getPurchases(url);
+    if (method === "GET"    && path === "/api/purchases/invoice") return products.getInvoicePDF(req, url);
+    if (method === "GET"    && path === "/api/purchases/latest") return products.getLatestPurchaseId(url);
     
     // FRONTEND ROUTES
     if (path === '/' || path === '/index.html') {
