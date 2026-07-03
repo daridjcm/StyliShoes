@@ -108,7 +108,10 @@ document.addEventListener("keydown", (e) => e.key === "Escape" && toggleCart(fal
 
 DOM.btnInvoice?.addEventListener("click", async () => {
   const user = checkAuth();
-  if (!user) return alert("Please log in.");
+  if (!user) {
+    alert("Please log in.");
+    window.location.href = '/src/pages/login.html';
+  }
 
   if (lastPurchaseResult?.id_purchase) {
     return downloadInvoiceFromAPI(lastPurchaseResult.id_purchase);
