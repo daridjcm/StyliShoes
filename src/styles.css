@@ -93,13 +93,16 @@ h2 { font-size: 2rem; }
 h3 { font-size: 1.5rem; }
 
 /* ===== Links ===== */
-a {
+a.link {
+  text-align: center;
+}
+a, a.link {
   text-decoration: none;
   color: var(--color-primary);
   transition: var(--transition);
 }
 
-a:hover {
+a:hover, a.link:hover {
   text-decoration: underline;
   color: var(--color-primary-hover);
 }
