@@ -1,6 +1,6 @@
 import { join } from 'path';
-import * as auth from './server/controllers/authController.js';
-import * as products from './server/controllers/productController.js';
+import * as auth from './server/controllers/auth.controller.js';
+import * as products from './server/controllers/product.controller.js';
 
 Bun.serve({
   port: 3000,
