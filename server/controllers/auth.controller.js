@@ -1,4 +1,4 @@
-import pool from "../db.js";
+import pool from "../database.js";
 import jwt from 'jsonwebtoken';
 
 const jsonResponse = (data, status = 200) => 

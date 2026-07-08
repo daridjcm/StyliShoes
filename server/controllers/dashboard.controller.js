@@ -164,6 +164,17 @@ function crudProducts(username) {
       if (!img?.files?.length) formData.delete('image');
       if (idInput.value) formData.set('id', idInput.value);
     }
+
+    if(currentMode === 'UPDATE' || currentMode === 'CREATE') {
+      const priceValue = formData.get('price');
+      const sizeValue = formData.get('size');
+      if (!sizeValue || !/^\d+(,\d+)*$/.test(sizeValue)) {
+        return alert("Please enter a valid size format (e.g., 38,39,40).");
+      }
+      if (isNaN(priceValue) || Number(priceValue) <= 0) {
+        return alert("Please enter a valid price greater than 0.");
+      }
+    }
     await apiRequest(currentMode === 'CREATE' ? 'POST' : 'PUT', formData);
   });
 

@@ -1,4 +1,4 @@
-# Requisitos y Especificaciones
+# Requisitos
 **- Requisitos funcionales:**
   1. El usuario debe poder iniciar sesión
   2. El usuario debe poder crear una cuenta nueva

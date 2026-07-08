@@ -1,4 +1,4 @@
-import pool from "../db.js";
+import pool from "../database.js";
 import { join } from 'path';
 import { jsPDF } from 'jspdf';
 import autoTable from "jspdf-autotable";
@@ -21,7 +21,7 @@ async function syncProductsJson() {
       image: r.image_url ? r.image_url.split('/').pop() : ''
     }));
 
-    await Bun.write(join(import.meta.dir, '../../products.json'), JSON.stringify({ products: formattedProducts }, null, 2));
+    // await Bun.write(join(import.meta.dir, 'src/utils/products.json'), JSON.stringify({ products: formattedProducts }, null, 2));
   } catch (error) {
     console.error("Error syncing JSON:", error);
   }
