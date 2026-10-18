@@ -15,7 +15,6 @@
 
   # Instalar dependencias
     bun install
-    bun run server.js
 
   # Configurar .env
     cp .env.example .env
@@ -34,7 +33,8 @@
   CREATE DATABASE stylishoes;
   EXIT;   
   ```
-  Al salir de la consola interactiva, inicie el servidor con el siguiente comando:
+  Para iniciar la interfaz React durante el desarrollo:
   ```bash
-  bun run server.js
+  bun run dev
   ```
+  Vite estará disponible en `http://localhost:5173`. Para iniciar también el servidor API en paralelo, utilice `bun run dev:full`. Para compilar la interfaz y servirla desde Bun, ejecute `bun run start`.

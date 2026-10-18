@@ -1,69 +1,62 @@
-import { join } from 'path';
-import * as auth from './server/controllers/auth.controller.js';
-import * as products from './server/controllers/product.controller.js';
+import { join, normalize } from "path";
+import * as auth from "./server/controllers/auth.controller.js";
+import * as products from "./server/controllers/product.controller.js";
+import * as purchases from "./server/controllers/purchase.controller.js";
+import { safely } from "./server/lib/http.js";
+import { DIST_DIR, IMAGES_DIR, IMAGES_URL } from "./server/lib/paths.js";
+
+const PORT = 3000;
+
+const apiRoutes = {
+  "POST /api/register": auth.registerUser,
+  "POST /api/login": auth.loginUser,
+
+  "GET /api/products": products.getProducts,
+  "POST /api/products": products.createProduct,
+  "PUT /api/products": products.updateProduct,
+  "DELETE /api/products": products.deleteProduct,
+
+  "POST /api/purchases": purchases.createPurchase,
+  "GET /api/purchases": purchases.getPurchases,
+  "GET /api/purchases/invoice": purchases.getInvoicePDF,
+  "GET /api/purchases/latest": purchases.getLatestPurchaseId,
+};
+
+/** Sirve un archivo dentro de `baseDir` (nunca fuera de él). */
+async function serveStatic(baseDir, relativePath) {
+  const filePath = normalize(join(baseDir, relativePath));
+  if (!filePath.startsWith(baseDir)) return null;
+
+  const file = Bun.file(filePath);
+  return (await file.exists()) ? new Response(file) : null;
+}
 
 Bun.serve({
-  port: 3000,
+  port: PORT,
   async fetch(req) {
     const url = new URL(req.url);
-    const path = url.pathname;
-    const method = req.method;
+    const { pathname } = url;
 
-    // API AUTH
-    if (method === "POST" && path === "/api/register") return auth.registerUser(req);
-    if (method === "POST" && path === "/api/users")    return auth.saveUser(req);
-    if (method === "GET"  && path === "/api/users")    return auth.getUsers();
-    if (method === "POST" && path === "/api/login")    return auth.loginUser(req);
+    const handler = apiRoutes[`${req.method} ${pathname}`];
+    if (handler) return safely(`${req.method} ${pathname}`, () => handler(req, url));
+    if (pathname.startsWith("/api/")) return Response.json({ error: "API route not found" }, { status: 404 });
 
-    // API CRUD PRODUCTS  
-    if (method === "POST"   && path === "/api/products") return products.createProduct(req);
-    if (method === "GET"    && path === "/api/products") return products.getProductById(url);
-    if (method === "PUT"    && path === "/api/products") return products.updateProduct(req);
-    if (method === "DELETE" && path === "/api/products") return products.deleteProduct(req);
-    if (method === "POST"   && path === "/api/purchases") return products.createPurchase(req);
-    if (method === "GET"    && path === "/api/purchases") return products.getPurchases(url);
-    if (method === "GET"    && path === "/api/purchases/invoice") return products.getInvoicePDF(req, url);
-    if (method === "GET"    && path === "/api/purchases/latest") return products.getLatestPurchaseId(url);
-    
-    // FRONTEND ROUTES
-    if (path === '/' || path === '/index.html') {
-      const filePath = join(import.meta.dir, 'index.html');
-      const file = Bun.file(filePath);
-      if (await file.exists()) {
-        return new Response(file, { headers: { "Content-Type": "text/html" } });
-      }
-      return new Response('index.html not found en la raíz', { status: 404 });
+    if (pathname.startsWith(`${IMAGES_URL}/`)) {
+      const image = await serveStatic(IMAGES_DIR, pathname.slice(IMAGES_URL.length));
+      if (image) return image;
     }
 
-    if (path === '/products.html') {
-      const filePath = join(import.meta.dir, 'products.html');
-      const file = Bun.file(filePath);
-      if (await file.exists()) {
-        return new Response(file, { headers: { "Content-Type": "text/html" } });
-      }
-    }
-    
-    if (path.startsWith('/src/')) {
-      const filePath = join(import.meta.dir, path);
-      const file = Bun.file(filePath);
-      if (await file.exists()) {
-        return new Response(file);
-      }
+    if (pathname.startsWith("/assets/")) {
+      const asset = await serveStatic(DIST_DIR, pathname);
+      if (asset) return asset;
     }
 
-    if (path.startsWith('/server/')) {
-      const filePath = join(import.meta.dir, path);
-      
-      const file = Bun.file(filePath);
-      if (await file.exists()) {
-        return new Response(file, { headers: { "Content-Type": "application/javascript" } });
-      }
-      console.log('File not found:', filePath);
-    }
-    
-    console.log(`Route not found: ${path}`);
-    return new Response('404 Not Found - File not found', { status: 404 });
+    // Cualquier otra ruta es del frontend (SPA): se resuelve en el navegador.
+    const index = Bun.file(join(DIST_DIR, "index.html"));
+    if (await index.exists()) return new Response(index, { headers: { "Content-Type": "text/html" } });
+
+    return new Response("Frontend not built. Run `bun run build` first.", { status: 503 });
   },
 });
 
-console.log('Server running on http://localhost:3000');
+console.log(`Server running on http://localhost:${PORT}`);

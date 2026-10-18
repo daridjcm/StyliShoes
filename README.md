@@ -40,10 +40,12 @@ git clone https://github.com/daridjcm/StyliShoes.git
 cd StyliShoes
 ```
 
-3. Instala dependencias y ejecuta el servidor.
+3. Instala dependencias y ejecuta la aplicación React en desarrollo.
 ```bash
-bun install & bun run server.js
+bun install
+bun run dev
 ```
+La interfaz estará disponible en `http://localhost:5173`. Para generar y servir la versión de producción, utiliza `bun run start`.
 
 
 ## 💻 Uso
@@ -115,47 +117,44 @@ Explora el catálogo de productos, navega por la tienda utilizando el menú prin
     └── 📁server
         └── 📁controllers
             ├── auth.controller.js
-            ├── cart.controller.js
-            ├── dashboard.controller.js
-            ├── forms.controller.js
             ├── product.controller.js
-        ├── database.js
-        ├── index.js
+            ├── purchase.controller.js
+        └── 📁lib
+            ├── http.js
+            ├── paths.js
+        └── 📁models
+            ├── Product.ts
+            ├── Purchase.ts
+            ├── User.ts
+        └── 📁repositories
+            ├── ProductRepo.ts
+            ├── PurchaseRepo.ts
+            ├── UserRepo.ts
+        └── 📁services
+            ├── auth.service.js
+            ├── image.service.js
+            ├── invoice.service.js
+        ├── database.ts
     └── 📁src
+        └── 📁components
+        └── 📁data
+        └── 📁hooks
         └── 📁images
             └── 📁logo
-                ├── stylishoes-imagotype.png
-                ├── stylishoes-imagotype.svg
-                ├── stylishoes-isotype.png
-                ├── stylishoes-isotype.svg
-            ├── af1-force.jpeg
-            ├── black-shoes.jpeg
-            ├── cherry-heels.jpeg
-            ├── heart-heleed.jpeg
-            ├── product_11.jpeg
-            ├── product_12.jpeg
-            ├── product_1782109171717.jpeg
-            ├── red-heels.jpeg
-            ├── vans-shoes.jpeg
         └── 📁pages
-            ├── aboutUS.html
-            ├── contact.html
-            ├── dashboard.html
-            ├── login.html
-            ├── products.html
-            ├── register.html
-            ├── terms_conditions.html
-        └── 📁utils
-            ├── products.json
+        └── 📁services
+        ├── App.jsx
+        ├── main.jsx
+        ├── routes.js
         ├── styles.css
-    ├── .env
     ├── .env.example
     ├── .gitignore
     ├── bun.lock
     ├── index.html
     ├── package.json
     ├── README.md
-    └── server.js
+    ├── server.js
+    └── vite.config.js
 ```
 
 ## 📄 Licencia
